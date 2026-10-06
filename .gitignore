@@ -1,0 +1,20 @@
+# Gradle
+.gradle/
+build/
+
+# Signing keys — never commit
+certs/
+
+# IDE files
+.idea/
+*.iml
+*.ipr
+*.iws
+out/
+
+# Build artifacts shipped elsewhere (Releases / Marketplace)
+*.zip
+
+# OS
+.DS_Store
+Thumbs.db

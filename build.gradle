@@ -1,0 +1,52 @@
+plugins {
+    id 'java'
+    id 'org.jetbrains.intellij' version '1.17.4'
+}
+
+group 'com.aitools'
+version '1.6.5'
+
+// 以 2021.1(211) 为最低支持版本编译，插件可运行于 2021.1 ~ until-build(299) 之间的所有 IDEA
+// 2021.1 运行于 JBR 11，因此字节码目标必须是 Java 11
+java {
+    sourceCompatibility = JavaVersion.VERSION_11
+    targetCompatibility = JavaVersion.VERSION_11
+}
+
+tasks.withType(JavaCompile).configureEach {
+    options.encoding = 'UTF-8'
+    options.release = 11
+}
+
+repositories {
+    maven { url = 'https://maven.aliyun.com/repository/public' }
+    mavenCentral()
+}
+
+intellij {
+    version = '211.6693.111'   // IntelliJ IDEA 2021.1
+    type = 'IC'
+    updateSinceUntilBuild = false  // since/until 直接在 plugin.xml 里声明
+    downloadSources = false
+}
+
+// since-build / until-build 在 plugin.xml 的 <idea-version> 中维护
+
+buildSearchableOptions {
+    enabled = false
+}
+
+// 禁用 gradle-intellij-plugin 的版本检查任务（其 GitHub API 请求在部分网络下挂起）
+tasks.matching { it.name == 'initializeIntelliJPlugin' }.configureEach { enabled = false }
+
+runPluginVerifier {
+    ideVersions = ["IC-2021.1", "IC-2024.2.1"]
+}
+
+// Marketplace 要求上传的插件必须签名；证书为本地自签（首次上传时会自动注册到 vendor 名下）
+// 证书生成：MSYS_NO_PATHCONV=1 openssl req -newkey rsa:4096 -nodes -keyout certs/private.pem -x509 -days 7300 -out certs/certificate.crt -subj "/CN=easy"
+signPlugin {
+    certificateChain = file('certs/certificate.crt').text
+    privateKey = file('certs/private.pem').text
+    password = ''
+}
