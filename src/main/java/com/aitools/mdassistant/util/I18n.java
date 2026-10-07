@@ -66,6 +66,15 @@ public final class I18n {
         ZH.put("chat.classify", "归类当前文档");
         ZH.put("chat.classify.tip", "让 AI 阅读当前上下文文档并自动归入类别");
         ZH.put("chat.you", "你");
+        ZH.put("about.action", "关于 EasyMDAssistant");
+        ZH.put("about.action.desc", "作者与联系方式");
+        ZH.put("about.title", "关于 EasyMDAssistant");
+        ZH.put("about.desc", "AI Markdown 文档助手：扫描、分类项目文档，并支持流式 AI 对话。");
+        ZH.put("about.author", "作者");
+        ZH.put("about.email", "邮箱");
+        ZH.put("about.home", "主页");
+        ZH.put("about.issues", "问题反馈");
+        ZH.put("about.license", "许可证");
         ZH.put("chat.ai", "AI");
         ZH.put("chat.sys", "系统");
         ZH.put("chat.hint", "提示：在上方选择文档后提问；点「归类当前文档」可让 AI 自动分类。\n"
@@ -242,6 +251,15 @@ public final class I18n {
         EN.put("chat.classify", "Categorize this doc");
         EN.put("chat.classify.tip", "Let AI read the context document and categorize it automatically");
         EN.put("chat.you", "You");
+        EN.put("about.action", "About EasyMDAssistant");
+        EN.put("about.action.desc", "Author & contact info");
+        EN.put("about.title", "About EasyMDAssistant");
+        EN.put("about.desc", "AI Markdown assistant: scan, classify and chat about your project docs.");
+        EN.put("about.author", "Author");
+        EN.put("about.email", "Email");
+        EN.put("about.home", "Homepage");
+        EN.put("about.issues", "Feedback");
+        EN.put("about.license", "License");
         EN.put("chat.ai", "AI");
         EN.put("chat.sys", "System");
         EN.put("chat.hint", "Tip: select a document above as context, then ask. \"Categorize this doc\" classifies it via AI.\n"

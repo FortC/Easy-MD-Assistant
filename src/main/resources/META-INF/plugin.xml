@@ -20,7 +20,26 @@
         Configure API key and model in <b>Settings &gt; Tools &gt; EasyMDAssistant AI</b> first.
     ]]></description>
 
+    <change-notes><![CDATA[
+        <b>1.7.0</b><br>
+        <ul>
+            <li>Added an "About EasyMDAssistant" entry (Help menu &amp; tool window toolbar) with author, email, GitHub repository, issues link and license</li>
+            <li>Fixed: connectivity test could freeze the UI for minutes when IDE PAC proxy auto-detection stalls — proxy resolution now runs in the background with a timeout</li>
+            <li>Fixed: test result was never rendered while a modal dialog (e.g. Settings) was open, leaving the status stuck at "Testing…"</li>
+            <li>Fixed: streaming AI replies were always empty due to an SSE payload parsing bug — chat now streams token by token</li>
+        </ul>
+    ]]></change-notes>
+
     <idea-version since-build="211" until-build="299.*"/>
+
+    <actions>
+        <action id="com.clb.easymdassistant.About"
+                class="com.aitools.mdassistant.AboutAction"
+                text="About EasyMDAssistant"
+                description="Author &amp; contact info">
+            <add-to-group group-id="HelpMenu" anchor="last"/>
+        </action>
+    </actions>
 
     <depends>com.intellij.modules.platform</depends>
 

@@ -68,7 +68,7 @@
 - **JetBrains Marketplace** —— 审核中
 - **本地安装**：`File / Settings → Plugins → ⚙ → Install Plugin from Disk…` 选择发布的 zip，重启即可
 
-## 快速上手
+## 使用
 
 1. 安装后打开任意项目，左侧点开 **EasyMDAssistant** 工具窗口
 2. `Settings → Tools → EasyMDAssistant AI` 配置服务商 / API Key / 模型（点「测试连接」验证）

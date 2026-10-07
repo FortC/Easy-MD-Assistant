@@ -50,7 +50,7 @@ Compatible with **IntelliJ IDEA 2021.1+** (Community & Ultimate, pure Java, zero
 - **JetBrains Marketplace** — listing in review
 - **From disk**: `Settings → Plugins → ⚙ → Install Plugin from Disk…` → select the released zip → restart
 
-## Quick Start
+## Usage
 
 1. Open any project, click the **EasyMDAssistant** tool window on the left
 2. `Settings → Tools → EasyMDAssistant AI` — configure provider / API key / model, click **Test Connection** to verify

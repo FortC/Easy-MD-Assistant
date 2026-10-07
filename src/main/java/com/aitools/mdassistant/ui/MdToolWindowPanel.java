@@ -281,6 +281,7 @@ public class MdToolWindowPanel extends SimpleToolWindowPanel {
         group.add(aiToolToggle);
         group.add(rulesAction);
         group.add(settingsAction);
+        group.add(new com.aitools.mdassistant.AboutAction());
 
         ActionToolbar toolbar = ActionManager.getInstance()
                 .createActionToolbar("EasyMDAssistant Toolbar", group, true);
