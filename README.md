@@ -10,7 +10,7 @@ An AI-powered Markdown assistant for IntelliJ IDEA: scan and classify every doc 
 
 ### 📂 Scan & Organize
 - Tool window scans all `.md` / `.markdown` files in the project (skips `node_modules`, `build`, `.git`, etc.)
-- Four grouping modes: **by directory / smart category / flat / by date**, double-click to open
+- Five grouping modes: **by directory / smart category / by date / original tree / flat** (flat list stays last), double-click to open. **Original tree** mirrors the project's real directory hierarchy (nested, full paths) without any plugin classification — ideal when you maintain your own Markdown structure
 - One-click filter for 30+ AI tool directories (`.codex`, `.claude`, `.cursor`, `.workbuddy`, `.continue`, `.windsurf`, `.gemini`, `.qwen`, `.kiro`, `.trae`, `.cline`, and more — configurable)
 - Right-click a doc to classify it (physically moves it into a category folder), run AI actions, or start a Q&A with it; multi-select docs and export them as a ZIP that follows your current grouping
 
@@ -27,9 +27,12 @@ Four knowledge roles (requirement / example / result / error) whose directories 
 
 ### 💬 AI chat & actions
 - Multi-turn chat with **SSE streaming output**, any document selectable as context (up to 15,000 chars injected), Ctrl+Enter to send, stop anytime
+- **Chat-driven document management**: issue commands right in the chat, e.g. "filter out all SKILL.md files and everything under docs/tmp", "classify all documents", "clear filter rules" — AI returns structured actions applied to the tree automatically (project-level filter rules with `*` wildcards)
 - One-click AI actions: **summarize / translate / polish / outline / extract TODOs** — copy the result, append it to the source doc, or save it as a new file
 
 ### 🔌 Dual-protocol providers
+The **Import cc-switch config** button in Settings reads providers from cc-switch (`~/.cc-switch/config.json`) and the live Claude Code (`~/.claude/settings.json`) / Codex (`~/.codex`) configurations.
+
 | Provider | Protocol | Base URL example | Model example |
 |---|---|---|---|
 | OpenAI | OpenAI-compatible | `https://api.openai.com` | `gpt-4o-mini` |

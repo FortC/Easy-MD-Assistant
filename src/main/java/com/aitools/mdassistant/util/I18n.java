@@ -34,6 +34,7 @@ public final class I18n {
         ZH.put("group.smart", "智能分类");
         ZH.put("group.none", "不分组");
         ZH.put("group.date", "按日期分组");
+        ZH.put("group.path", "保持原层级");
         ZH.put("group.aiTool", "AI 工具文档");
         ZH.put("root.dir", "(项目根目录)");
         ZH.put("tree.open", "打开");
@@ -78,6 +79,9 @@ public final class I18n {
         ZH.put("chat.ai", "AI");
         ZH.put("chat.sys", "系统");
         ZH.put("chat.hint", "提示：在上方选择文档后提问；点「归类当前文档」可让 AI 自动分类。\n"
+                + "也可以直接下达文档管理指令，例如：\n"
+                + "· 过滤掉所有 SKILL.md 和 docs/tmp 下的文档\n"
+                + "· 把所有文档按内容分类 / 清除过滤规则\n\n"
                 + "文档上的右键菜单提供总结/翻译/润色等 AI 操作。\n\n");
         ZH.put("chat.stopped", "\n（已停止）\n\n");
         ZH.put("chat.err", "\n[出错] {0}\n\n");
@@ -86,6 +90,11 @@ public final class I18n {
         ZH.put("chat.classifyReq", "请求 AI 分类《{0}》…");
         ZH.put("chat.pickContext", "请先在上方选择一个上下文文档");
         ZH.put("chat.inputHint", "输入问题，Ctrl+Enter 发送…");
+        ZH.put("chat.manage.running", "正在按指令处理文档列表…");
+        ZH.put("chat.manage.cleared", "✔ 已清除全部过滤规则（重新扫描后恢复显示）\n");
+        ZH.put("chat.manage.filterAdded", "✔ 过滤规则已生效：{0}\n");
+        ZH.put("chat.manage.classified", "✔ 已为 {0} 个文档设置分类（切换到「智能分类」查看）\n");
+        ZH.put("chat.manage.none", "\n（未从回复中解析出可执行的操作）\n\n");
 
         ZH.put("dlg.caption", "对 {0} 执行「{1}」，结果如下：");
         ZH.put("dlg.close", "关闭");
@@ -124,6 +133,8 @@ public final class I18n {
         ZH.put("set.timeout", "请求超时（秒）");
         ZH.put("set.test", "测试连接");
         ZH.put("set.copyCurl", "复制 cURL");
+        ZH.put("set.importCc", "导入 cc-switch 配置");
+        ZH.put("set.importCc.tip", "读取 cc-switch（~/.cc-switch/config.json）及 Claude Code / Codex 当前生效的服务商配置，填入上方表单");
         ZH.put("set.curlCopied", "已复制等价 cURL 命令：请在终端（Git Bash/PowerShell）粘贴运行——若 curl 通而插件不通请反馈，若 curl 也不通则是网络/配置问题");
         ZH.put("set.testing", "测试中…");
         ZH.put("set.testingUrl", "测试中… {0}");
@@ -200,6 +211,19 @@ public final class I18n {
         ZH.put("set.ignoreHint", "被忽略的文档不会出现在扫描结果中；还原后点击工具栏「重新扫描」即可恢复显示。");
         ZH.put("notify.globalSaved", "已保存为全局默认，所有项目将使用当前知识库目录");
         ZH.put("notify.globalRestored", "已恢复为全局默认（本项目）");
+        ZH.put("cc.scanning", "正在扫描 cc-switch / Claude Code / Codex 配置…");
+        ZH.put("cc.none", "未找到可导入的配置：未在 ~/.cc-switch/config.json、~/.claude/settings.json 或 ~/.codex 中发现服务商信息。\n是否手动选择一个 cc-switch 的 config.json？");
+        ZH.put("cc.noneInFile", "所选文件中未发现服务商配置");
+        ZH.put("cc.pick", "选择要导入的服务商配置：");
+        ZH.put("cc.pickFile", "选择 cc-switch 的 config.json");
+        ZH.put("cc.col.source", "来源");
+        ZH.put("cc.col.name", "名称");
+        ZH.put("cc.col.proto", "协议");
+        ZH.put("cc.col.base", "API 地址");
+        ZH.put("cc.col.model", "模型");
+        ZH.put("cc.col.key", "API Key");
+        ZH.put("cc.imported", "已填入「{0}」的配置，点击 Apply / OK 保存");
+        ZH.put("cc.readFail", "读取失败：{0}");
 
         // ==================== English ====================
         EN.put("tb.refresh", "Rescan");
@@ -219,6 +243,7 @@ public final class I18n {
         EN.put("group.smart", "Smart category");
         EN.put("group.none", "Flat list");
         EN.put("group.date", "By date");
+        EN.put("group.path", "Original tree");
         EN.put("group.aiTool", "AI tool docs");
         EN.put("root.dir", "(project root)");
         EN.put("tree.open", "Open");
@@ -263,6 +288,9 @@ public final class I18n {
         EN.put("chat.ai", "AI");
         EN.put("chat.sys", "System");
         EN.put("chat.hint", "Tip: select a document above as context, then ask. \"Categorize this doc\" classifies it via AI.\n"
+                + "You can also issue document management commands, e.g.:\n"
+                + "- Filter out all SKILL.md files and everything under docs/tmp\n"
+                + "- Classify all documents / clear filter rules\n\n"
                 + "Right-click a document for summarize / translate / polish actions.\n\n");
         EN.put("chat.stopped", "\n(stopped)\n\n");
         EN.put("chat.err", "\n[error] {0}\n\n");
@@ -271,6 +299,11 @@ public final class I18n {
         EN.put("chat.classifyReq", "Asking AI to categorize \"{0}\"…");
         EN.put("chat.pickContext", "Select a context document first");
         EN.put("chat.inputHint", "Type a question, Ctrl+Enter to send…");
+        EN.put("chat.manage.running", "Processing the document list per your instruction…");
+        EN.put("chat.manage.cleared", "✔ All filter rules cleared (rescan to bring documents back)\n");
+        EN.put("chat.manage.filterAdded", "✔ Filter rules applied: {0}\n");
+        EN.put("chat.manage.classified", "✔ Categories set for {0} documents (switch to \"Smart category\" to view)\n");
+        EN.put("chat.manage.none", "\n(no actionable operations parsed from the reply)\n\n");
 
         EN.put("dlg.caption", "{1} — {0}. Result:");
         EN.put("dlg.close", "Close");
@@ -309,6 +342,8 @@ public final class I18n {
         EN.put("set.timeout", "Timeout (seconds)");
         EN.put("set.test", "Test connection");
         EN.put("set.copyCurl", "Copy cURL");
+        EN.put("set.importCc", "Import cc-switch config");
+        EN.put("set.importCc.tip", "Read providers from cc-switch (~/.cc-switch/config.json) and the live Claude Code / Codex configs into the form above");
         EN.put("set.curlCopied", "Equivalent cURL copied: run it in a terminal — if curl works but the plugin does not, report it; if curl fails too, it is a network/config issue");
         EN.put("set.testing", "Testing…");
         EN.put("set.testingUrl", "Testing… {0}");
@@ -383,6 +418,19 @@ public final class I18n {
         EN.put("set.ignoreHint", "Ignored documents are excluded from scans; rescan after restoring.");
         EN.put("notify.globalSaved", "Saved as global default; all projects will use these knowledge dirs");
         EN.put("notify.globalRestored", "Restored global defaults (this project)");
+        EN.put("cc.scanning", "Scanning cc-switch / Claude Code / Codex configs…");
+        EN.put("cc.none", "No importable configuration found: no provider info in ~/.cc-switch/config.json, ~/.claude/settings.json or ~/.codex.\nPick a cc-switch config.json manually?");
+        EN.put("cc.noneInFile", "No provider configuration found in the selected file");
+        EN.put("cc.pick", "Choose a provider configuration to import:");
+        EN.put("cc.pickFile", "Choose the cc-switch config.json");
+        EN.put("cc.col.source", "Source");
+        EN.put("cc.col.name", "Name");
+        EN.put("cc.col.proto", "Protocol");
+        EN.put("cc.col.base", "Base URL");
+        EN.put("cc.col.model", "Model");
+        EN.put("cc.col.key", "API key");
+        EN.put("cc.imported", "Filled in \"{0}\"; click Apply / OK to save");
+        EN.put("cc.readFail", "Read failed: {0}");
         EN.put("set.aiHint", "Base URL can be domain only; /v1/chat/completions or /v1/messages is appended automatically.");
         EN.put("set.hint.line1", "Providers: OpenAI-compatible (OpenAI / DeepSeek / GLM / OneAPI...) or Anthropic (Claude).");
         EN.put("set.hint.line2", "Examples: https://api.openai.com · https://api.deepseek.com · https://open.bigmodel.cn/api/paas/v4 · https://api.anthropic.com");

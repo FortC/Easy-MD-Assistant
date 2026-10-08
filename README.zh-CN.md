@@ -13,7 +13,9 @@
 ### 1. 扫描 & 展示
 - 工具窗口位于左侧活动栏，打开即自动全项目扫描 `.md` / `.markdown`
 - 自动跳过 `node_modules`、`build`、`target`、`.git`、`venv` 等目录
-- 四种分组方式可切换：**按目录 / 智能分类 / 不分组 / 按日期**（按修改日期建组，最新日期组与组内最新文档都排在最上），双击打开文档；默认分组方式可在设置中配置
+- 五种分组方式可切换：**按目录 / 智能分类 / 按日期 / 保持原层级 / 不分组**（不分组固定在最后），双击打开文档；默认分组方式可在设置中配置
+  - **按日期**：按修改日期建组，最新日期组与组内最新文档都排在最上
+  - **保持原层级**：按项目原始目录结构原样建树（多级嵌套、全路径保留），不使用任何插件分类 —— 适合自己维护 Markdown 目录结构的项目
 - **AI 工具目录一键过滤**：预置 30+ 主流 AI 工具目录名单（.codex、.workbuddy、.claude、.cursor、.aider、.continue、.windsurf、.gemini、.qwen、.kiro、.trae、.cline、.augment、.roo、.goose、memory-bank 等），默认扫描时过滤；工具栏漏斗按钮一键显示/隐藏，显示时归入「AI 工具文档」分组；名单可在设置中增删
 
 ### 2. 文档分类（目录库 + 三引擎，按优先级叠加）
@@ -45,9 +47,13 @@
 
 ### 4. AI 问答与操作
 - **AI 对话**：下半区对话面板，**「上下文」区选择作为参考的文档**（提问时其全文注入对话，最多 15000 字符，悬停有提示），多轮对话 + SSE 流式输出（Ctrl+Enter 发送），可随时停止
+- **对话式文档管理**：直接在对话中下达指令，例如「过滤掉所有 SKILL.md 和 docs/tmp 下的文档」「把所有文档分类」「清除过滤规则」，AI 返回结构化结果后自动应用到文档树；过滤规则项目级持久化、支持 `*` 通配符
 - **AI 快捷操作**（右键菜单）：总结全文 / 翻译成英文 / 润色优化 / 生成大纲 / 提取待办；结果可复制、追加到原文末尾、或另存为新文档（`*-ai.md`）
 
 ### 5. AI 服务商（双协议通用格式）
+
+设置页「**导入 cc-switch 配置**」可自动读取 cc-switch（`~/.cc-switch/config.json`）以及 Claude Code / Codex 当前生效的服务商配置，选择后一键填入。
+
 | 服务商 | 协议 | 地址示例 | 模型示例 |
 |---|---|---|---|
 | OpenAI 兼容 | `POST {base}/v1/chat/completions` | `https://api.openai.com` | `gpt-4o-mini` |
@@ -96,6 +102,7 @@ src/main/java/com/aitools/mdassistant/
 ├── ai/
 │   ├── AiClient.java               # OpenAI/Anthropic 双协议 HTTP 客户端（SSE 流式）
 │   ├── AiConfig.java / AiSettings.java   # 配置（含 AI 工具目录/知识库/规则/语言）
+│   ├── CcSwitchImporter.java       # cc-switch / Claude Code / Codex 服务商配置发现与导入
 │   └── Json.java                   # 内置极简 JSON 解析器（零依赖）
 ├── cat/
 │   ├── AiClassifier.java           # 批量 AI 文档分类

@@ -10,8 +10,10 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -33,6 +35,8 @@ public class CategoryService implements PersistentStateComponent<CategoryService
         public Map<String, String> ignored = new LinkedHashMap<>();
         /** 知识库角色 -> 目录名（项目级覆盖；值为空串表示本项目停用该库）。 */
         public Map<String, String> knowledgeOverrides = new LinkedHashMap<>();
+        /** AI 对话生成的过滤规则（支持 * 通配符，匹配相对路径/文件名，大小写不敏感）。 */
+        public List<String> aiFilters = new ArrayList<>();
     }
 
     private State state = new State();
@@ -90,6 +94,79 @@ public class CategoryService implements PersistentStateComponent<CategoryService
 
     public void clearIgnored() {
         getIgnored().clear();
+    }
+
+    // ==================== AI 对话过滤规则 ====================
+
+    public List<String> getAiFilters() {
+        return state.aiFilters == null ? (state.aiFilters = new ArrayList<>()) : state.aiFilters;
+    }
+
+    /** 新增过滤规则（去重）；空规则忽略。 */
+    public void addAiFilter(@Nullable String pattern) {
+        String p = pattern == null ? "" : pattern.trim();
+        if (p.isEmpty()) {
+            return;
+        }
+        List<String> filters = getAiFilters();
+        if (!filters.contains(p)) {
+            filters.add(p);
+        }
+    }
+
+    public void clearAiFilters() {
+        getAiFilters().clear();
+    }
+
+    /** 相对路径是否命中任一过滤规则（支持 * 通配符；无通配符时按包含匹配）。 */
+    public static boolean matchesAnyFilter(@NotNull String relativePath, @Nullable List<String> patterns) {
+        if (patterns == null || patterns.isEmpty()) {
+            return false;
+        }
+        String path = relativePath.replace('\\', '/').toLowerCase();
+        String name = path.substring(path.lastIndexOf('/') + 1);
+        for (String pattern : patterns) {
+            if (pattern == null) {
+                continue;
+            }
+            String p = pattern.trim().replace('\\', '/').toLowerCase();
+            if (p.isEmpty()) {
+                continue;
+            }
+            if (p.indexOf('*') >= 0) {
+                if (globMatches(p, path)) {
+                    return true;
+                }
+            } else if (path.contains(p) || name.contains(p)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /** 极简通配符匹配：* 匹配任意字符序列，其余字符按字面比较。 */
+    private static boolean globMatches(@NotNull String pattern, @NotNull String path) {
+        // 经典双指针回溯算法，无需构造正则
+        int pi = 0, ti = 0, star = -1, mark = -1;
+        int pn = pattern.length(), tn = path.length();
+        while (ti < tn) {
+            if (pi < pn && (pattern.charAt(pi) == path.charAt(ti))) {
+                pi++;
+                ti++;
+            } else if (pi < pn && pattern.charAt(pi) == '*') {
+                star = pi++;
+                mark = ti;
+            } else if (star >= 0) {
+                pi = star + 1;
+                ti = ++mark;
+            } else {
+                return false;
+            }
+        }
+        while (pi < pn && pattern.charAt(pi) == '*') {
+            pi++;
+        }
+        return pi == pn;
     }
 
     // ==================== 知识库项目级覆盖 ====================

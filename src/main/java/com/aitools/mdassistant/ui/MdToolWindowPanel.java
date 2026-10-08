@@ -81,7 +81,11 @@ public class MdToolWindowPanel extends SimpleToolWindowPanel {
     private static final String GROUP_SMART = "group.smart";
     private static final String GROUP_NONE = "group.none";
     private static final String GROUP_DATE = "group.date";
+    /** 保持原层级：按项目目录结构原样建树，不使用任何分类。 */
+    private static final String GROUP_PATH = "group.path";
     public static final String AI_TOOL_GROUP_KEY = "group.aiTool";
+    /** 分组下拉顺序：按目录 / 智能分类 / 按日期 / 保持原层级 / 不分组（「不分组」固定在最后）。 */
+    private static final String[] GROUP_MODES = {GROUP_DIR, GROUP_SMART, GROUP_DATE, GROUP_PATH, GROUP_NONE};
 
     private final Project project;
     private final JTree tree;
@@ -104,10 +108,10 @@ public class MdToolWindowPanel extends SimpleToolWindowPanel {
         new TreeSpeedSearch(tree);
         tree.addMouseListener(new TreeMouseListener());
 
-        groupModeCombo = new ComboBox<>(new javax.swing.DefaultComboBoxModel<>(
-                new String[]{I18n.t(GROUP_DIR), I18n.t(GROUP_SMART), I18n.t(GROUP_NONE), I18n.t(GROUP_DATE)}));
+        groupModeCombo = new ComboBox<>(new javax.swing.DefaultComboBoxModel<>(groupModeNames()));
         int defaultMode = AiSettings.getInstance().getDefaultGroupMode();
-        groupModeCombo.setSelectedIndex(defaultMode >= 0 && defaultMode <= 3 ? defaultMode : 0);
+        groupModeCombo.setSelectedIndex(
+                defaultMode >= 0 && defaultMode < groupModeCombo.getItemCount() ? defaultMode : 0);
         groupModeCombo.addActionListener(e -> rebuildTree());
 
         JPanel treePanel = new JPanel(new BorderLayout());
@@ -120,7 +124,7 @@ public class MdToolWindowPanel extends SimpleToolWindowPanel {
         treePanel.add(comboBar, BorderLayout.NORTH);
         treePanel.add(ScrollPaneFactory.createScrollPane(tree), BorderLayout.CENTER);
 
-        chatPanel = new ChatPanel(project, this::getFiles, this::rebuildTree, this::onChatAreaToggle);
+        chatPanel = new ChatPanel(project, this::getFiles, this::rebuildTree, this::refresh, this::onChatAreaToggle);
 
         splitter = new OnePixelSplitter(true, "MdAssistant.Split.Proportion", 0.6f);
         splitter.setFirstComponent(treePanel);
@@ -183,12 +187,19 @@ public class MdToolWindowPanel extends SimpleToolWindowPanel {
                 MdScanner.ScanResult r = MdScanner.scan(project, indicator,
                         settings.getAiToolDirs(), settings.isShowAiToolDocs());
                 Set<String> ignoredUrls = CategoryService.getInstance(project).getIgnored().keySet();
-                r.files.removeIf(vf -> ignoredUrls.contains(vf.getUrl()));
+                List<String> aiFilters = CategoryService.getInstance(project).getAiFilters();
                 VirtualFile base = project.getBaseDir();
                 List<MdFile> result = new ArrayList<>(r.files.size());
                 for (VirtualFile vf : r.files) {
+                    if (ignoredUrls.contains(vf.getUrl())) {
+                        continue;
+                    }
                     String rel = VfsUtilCore.getRelativePath(vf, base, '/');
-                    result.add(new MdFile(vf, rel == null ? vf.getPath() : rel, r.aiToolFiles.contains(vf)));
+                    String relOrPath = rel == null ? vf.getPath() : rel;
+                    if (CategoryService.matchesAnyFilter(relOrPath, aiFilters)) {
+                        continue;
+                    }
+                    result.add(new MdFile(vf, relOrPath, r.aiToolFiles.contains(vf)));
                 }
                 result.sort(Comparator.comparing(MdFile::getRelativePath, String.CASE_INSENSITIVE_ORDER));
                 scanned = result;
@@ -403,6 +414,14 @@ public class MdToolWindowPanel extends SimpleToolWindowPanel {
         }
     }
 
+    private static String[] groupModeNames() {
+        String[] names = new String[GROUP_MODES.length];
+        for (int i = 0; i < GROUP_MODES.length; i++) {
+            names[i] = I18n.t(GROUP_MODES[i]);
+        }
+        return names;
+    }
+
     private boolean isSmartMode() {
         return I18n.t(GROUP_SMART).equals(groupModeCombo.getSelectedItem());
     }
@@ -413,6 +432,10 @@ public class MdToolWindowPanel extends SimpleToolWindowPanel {
 
     private boolean isDateMode() {
         return I18n.t(GROUP_DATE).equals(groupModeCombo.getSelectedItem());
+    }
+
+    private boolean isPathMode() {
+        return I18n.t(GROUP_PATH).equals(groupModeCombo.getSelectedItem());
     }
 
     private void classifyAll() {
@@ -572,6 +595,16 @@ public class MdToolWindowPanel extends SimpleToolWindowPanel {
                 group.sort(Comparator.comparingLong(MdFile::getTimeStamp).reversed());
             }
             appendGroups(root, byDate);
+        } else if (isPathMode()) {
+            // 保持原层级：按项目目录结构原样建树（全路径保留显示），不使用任何分类
+            for (MdFile f : files) {
+                String[] parts = f.getRelativePath().split("/");
+                DefaultMutableTreeNode cur = root;
+                for (int i = 0; i < parts.length - 1; i++) {
+                    cur = findOrCreateChild(cur, parts[i]);
+                }
+                cur.add(new DefaultMutableTreeNode(f));
+            }
         } else {
             for (MdFile f : files) {
                 root.add(new DefaultMutableTreeNode(f));
@@ -591,6 +624,19 @@ public class MdToolWindowPanel extends SimpleToolWindowPanel {
             }
             root.add(cat);
         }
+    }
+
+    /** 在父节点下按名称查找子目录节点，不存在则创建（用于「保持原层级」建树）。 */
+    private static DefaultMutableTreeNode findOrCreateChild(DefaultMutableTreeNode parent, String name) {
+        for (int i = 0; i < parent.getChildCount(); i++) {
+            Object c = ((DefaultMutableTreeNode) parent.getChildAt(i)).getUserObject();
+            if (c instanceof String && ((String) c).equalsIgnoreCase(name)) {
+                return (DefaultMutableTreeNode) parent.getChildAt(i);
+            }
+        }
+        DefaultMutableTreeNode node = new DefaultMutableTreeNode(name);
+        parent.add(node);
+        return node;
     }
 
     @Nullable
@@ -623,7 +669,7 @@ public class MdToolWindowPanel extends SimpleToolWindowPanel {
 
     /**
      * ZIP 条目名跟随当前分组模式：智能分类 →「类别/文件名」；不分组 → 平铺文件名；
-     * 按目录分组 → 保留项目内相对路径。同名冲突时追加 -N 序号。
+     * 按目录 / 保持原层级 → 保留项目内相对路径。同名冲突时追加 -N 序号。
      */
     private String entryNameFor(MdFile f, Set<String> used) {
         String entry;
@@ -634,7 +680,7 @@ public class MdToolWindowPanel extends SimpleToolWindowPanel {
             }
             cat = cat.replaceAll("[\\\\/:*?\"<>|]", "_");
             entry = cat + "/" + f.getName();
-        } else if (isDirMode()) {
+        } else if (isDirMode() || isPathMode()) {
             entry = f.getRelativePath().replace('\\', '/');
         } else {
             entry = f.getName();
@@ -809,8 +855,19 @@ public class MdToolWindowPanel extends SimpleToolWindowPanel {
         };
     }
 
-    private static final class MdTreeCellRenderer extends ColoredTreeCellRenderer {
-        private static final SimpleTextAttributes CATEGORY =
+    /** 目录节点计数：子树内的文档总数（「保持原层级」下目录可多级嵌套）。 */
+    private static int leafCount(DefaultMutableTreeNode node) {
+        int c = 0;
+        for (int i = 0; i < node.getChildCount(); i++) {
+            DefaultMutableTreeNode child = (DefaultMutableTreeNode) node.getChildAt(i);
+            Object o = child.getUserObject();
+            c += o instanceof MdFile ? 1 : leafCount(child);
+        }
+        return c;
+    }
+
+    private final class MdTreeCellRenderer extends ColoredTreeCellRenderer {
+        private final SimpleTextAttributes CATEGORY =
                 new SimpleTextAttributes(SimpleTextAttributes.STYLE_BOLD, null);
 
         @Override
@@ -822,14 +879,15 @@ public class MdToolWindowPanel extends SimpleToolWindowPanel {
                 setIcon(f.isFromAiToolDir() ? AllIcons.FileTypes.Config : AllIcons.FileTypes.Text);
                 append(f.getName(), SimpleTextAttributes.REGULAR_ATTRIBUTES);
                 String parent = f.getParentDirName();
-                if (!parent.isEmpty() && !I18n.t("root.dir").equals(parent)) {
+                // 「保持原层级」下父目录已体现为树节点，不再追加灰色后缀
+                if (!isPathMode() && !parent.isEmpty() && !I18n.t("root.dir").equals(parent)) {
                     append("  " + parent, SimpleTextAttributes.GRAYED_ATTRIBUTES);
                 }
                 setToolTipText(f.getRelativePath());
             } else if (o instanceof String) {
                 setIcon(AllIcons.Nodes.Folder);
                 append((String) o, CATEGORY);
-                append("  (" + ((DefaultMutableTreeNode) value).getChildCount() + ")",
+                append("  (" + leafCount((DefaultMutableTreeNode) value) + ")",
                         SimpleTextAttributes.GRAYED_ATTRIBUTES);
             }
         }

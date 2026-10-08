@@ -63,7 +63,7 @@ public class AiSettings implements PersistentStateComponent<AiSettings.State> {
         public boolean autoCreateLibDirs = true;
         /** 打开工具窗口时对话区（上下文条 + 对话记录）是否默认折叠，仅保留提问输入区。 */
         public boolean chatAreaCollapsed = false;
-        /** 默认分组方式：0=按目录，1=智能分类，2=不分组，3=按日期。 */
+        /** 默认分组方式：0=按目录，1=智能分类，2=按日期，3=保持原层级，4=不分组。 */
         public int defaultGroupMode = 0;
     }
 
@@ -378,11 +378,11 @@ public class AiSettings implements PersistentStateComponent<AiSettings.State> {
     }
 
     public int getDefaultGroupMode() {
-        return state.defaultGroupMode >= 0 && state.defaultGroupMode <= 3 ? state.defaultGroupMode : 0;
+        return state.defaultGroupMode >= 0 && state.defaultGroupMode <= 4 ? state.defaultGroupMode : 0;
     }
 
     public void setDefaultGroupMode(int v) {
-        state.defaultGroupMode = v >= 0 && v <= 3 ? v : 0;
+        state.defaultGroupMode = v >= 0 && v <= 4 ? v : 0;
     }
 
     private static String safe(String v) {

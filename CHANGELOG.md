@@ -3,6 +3,17 @@
 本项目所有显著变更均记录于此，格式遵循 [Keep a Changelog](https://keepachangelog.com/zh-CN/1.1.0/)，
 版本号遵循 [语义化版本](https://semver.org/lang/zh-CN/)。
 
+## [1.8.0] - 2026-10-08
+
+### Added
+- 新增「保持原层级」分组方式：按项目原始目录结构原样建树展示（多级嵌套、全路径保留），不使用任何插件分类；适合自己维护 Markdown 目录结构的项目
+- 分组下拉中「不分组」固定移动到最后一项
+- AI 对话支持文档管理指令：直接在对话中让 AI「过滤掉所有 SKILL.md / docs/tmp 下的文档」「把所有文档分类」「清除过滤规则」等，AI 返回结构化结果后自动应用到文档树（过滤规则项目级持久化，支持 `*` 通配符）
+- 设置页新增「导入 cc-switch 配置」：自动读取 cc-switch（`~/.cc-switch/config.json`，递归扫描兼容各版本 schema）以及 Claude Code（`~/.claude/settings.json`）/ Codex（`~/.codex/config.toml` + `auth.json`）当前生效的服务商配置，选择后一键填入表单；自动发现为空时可手动选择 config.json
+
+### Changed
+- 默认分组方式选项同步扩展（按目录 / 智能分类 / 按日期 / 保持原层级 / 不分组）；旧配置中索引 2/3（原「不分组」「按日期」）因顺序调整需要重新选择一次
+
 ## [1.7.0] - 2026-10-07
 
 ### Added

@@ -3,6 +3,7 @@ package com.aitools.mdassistant.ui.settings;
 import com.aitools.mdassistant.ai.AiClient;
 import com.aitools.mdassistant.ai.AiConfig;
 import com.aitools.mdassistant.ai.AiSettings;
+import com.aitools.mdassistant.ai.CcSwitchImporter;
 import com.aitools.mdassistant.cat.AiClassifier;
 import com.aitools.mdassistant.cat.CategoryService;
 import com.aitools.mdassistant.util.I18n;
@@ -57,6 +58,7 @@ public class AiSettingsComponent {
     private final JBTextField timeout = new JBTextField(8);
     private final JButton testBtn = new JButton(I18n.t("set.test"));
     private final JButton copyCurlBtn = new JButton(I18n.t("set.copyCurl"));
+    private final JButton importCcBtn = new JButton(I18n.t("set.importCc"));
     private final JBLabel status = new JBLabel(" ");
 
     private final ComboBox<String> language = new ComboBox<>(new javax.swing.DefaultComboBoxModel<>(
@@ -64,8 +66,10 @@ public class AiSettingsComponent {
     private final JBTextArea aiToolDirs = new JBTextArea(6, 36);
     private final JBCheckBox showAiToolDocs = new JBCheckBox();
     private final JBCheckBox chatCollapsedByDefault = new JBCheckBox();
+    /** 分组顺序与工具窗口一致：按目录 / 智能分类 / 按日期 / 保持原层级 / 不分组（最后）。 */
     private final ComboBox<String> defaultGroupMode = new ComboBox<>(new javax.swing.DefaultComboBoxModel<>(
-            new String[]{I18n.t("group.dir"), I18n.t("group.smart"), I18n.t("group.none"), I18n.t("group.date")}));
+            new String[]{I18n.t("group.dir"), I18n.t("group.smart"), I18n.t("group.date"),
+                    I18n.t("group.path"), I18n.t("group.none")}));
 
     /** 目录库（类别词表，全局）。 */
     private final DefaultTableModel libraryModel = new DefaultTableModel(
@@ -120,6 +124,8 @@ public class AiSettingsComponent {
         this.project = project;
         provider.addActionListener(e -> updateHints());
         testBtn.addActionListener(e -> runTest());
+        importCcBtn.addActionListener(e -> importCcSwitch());
+        importCcBtn.setToolTipText(I18n.t("set.importCc.tip"));
         libraryResetBtn.addActionListener(e -> resetLibrary());
         saveGlobalBtn.addActionListener(e -> saveGlobalKnowledge());
         useGlobalBtn.addActionListener(e -> restoreGlobalKnowledge());
@@ -138,6 +144,7 @@ public class AiSettingsComponent {
         JPanel testBtns = new JPanel(new java.awt.FlowLayout(java.awt.FlowLayout.LEFT, 4, 0));
         testBtns.add(testBtn);
         testBtns.add(copyCurlBtn);
+        testBtns.add(importCcBtn);
         copyCurlBtn.addActionListener(e -> copyCurl());
         testRow.add(testBtns, BorderLayout.WEST);
         testRow.add(status, BorderLayout.CENTER);
@@ -533,6 +540,80 @@ public class AiSettingsComponent {
         setStatus(I18n.t("set.curlCopied"), true);
     }
 
+    // ==================== 导入 cc-switch 配置 ====================
+
+    /**
+     * 发现 cc-switch / Claude Code / Codex 中的服务商配置，选择后填入表单（不立即保存，仍需 Apply/OK）。
+     * 自动发现为空时允许手动选择 cc-switch 的 config.json。
+     */
+    private void importCcSwitch() {
+        setStatus(I18n.t("cc.scanning"), true);
+        ApplicationManager.getApplication().executeOnPooledThread(() -> {
+            List<CcSwitchImporter.Candidate> found = CcSwitchImporter.discover();
+            Ui.invokeLater(() -> {
+                if (found.isEmpty()) {
+                    setStatus(" ", false);
+                    importFromPickedFile();
+                    return;
+                }
+                setStatus(" ", false);
+                chooseAndApply(found);
+            });
+        });
+    }
+
+    private void chooseAndApply(List<CcSwitchImporter.Candidate> found) {
+        CcSwitchChooserDialog dialog = new CcSwitchChooserDialog(found);
+        if (!dialog.showAndGet()) {
+            return;
+        }
+        CcSwitchImporter.Candidate c = dialog.getSelected();
+        if (c == null) {
+            return;
+        }
+        setProvider(c.provider);
+        if (!c.baseUrl.isEmpty()) {
+            setBaseUrl(c.baseUrl);
+        }
+        if (!c.model.isEmpty()) {
+            setModel(c.model);
+        }
+        if (!c.apiKey.isEmpty()) {
+            setApiKey(c.apiKey);
+        }
+        setStatus(I18n.f("cc.imported", c.name), true);
+    }
+
+    /** 自动发现为空时，让用户手动挑选一个 cc-switch config.json。 */
+    private void importFromPickedFile() {
+        int pick = com.intellij.openapi.ui.Messages.showYesNoDialog(panel,
+                I18n.t("cc.none"), I18n.t("set.importCc"), com.intellij.openapi.ui.Messages.getQuestionIcon());
+        if (pick != com.intellij.openapi.ui.Messages.YES) {
+            return;
+        }
+        com.intellij.openapi.fileChooser.FileChooserDescriptor desc =
+                new com.intellij.openapi.fileChooser.FileChooserDescriptor(true, false, false, false, false, false);
+        desc.setTitle(I18n.t("cc.pickFile"));
+        desc.withFileFilter(vf -> "json".equalsIgnoreCase(vf.getExtension()));
+        com.intellij.openapi.vfs.VirtualFile vf =
+                com.intellij.openapi.fileChooser.FileChooser.chooseFile(desc, project, null);
+        if (vf == null) {
+            return;
+        }
+        List<CcSwitchImporter.Candidate> parsed = new ArrayList<>();
+        try {
+            CcSwitchImporter.parseFile(new java.io.File(vf.getPath()), parsed);
+        } catch (Exception e) {
+            setStatus(I18n.f("cc.readFail", e.getMessage() == null ? e.getClass().getSimpleName() : e.getMessage()), false);
+            return;
+        }
+        if (parsed.isEmpty()) {
+            setStatus(I18n.t("cc.noneInFile"), false);
+            return;
+        }
+        chooseAndApply(parsed);
+    }
+
     private void setStatus(final String text, final boolean ok) {
         Ui.invokeLater(() -> {
             status.setText(text);
@@ -644,7 +725,8 @@ public class AiSettingsComponent {
     }
 
     public void setDefaultGroupMode(int v) {
-        defaultGroupMode.setSelectedIndex(v >= 0 && v <= 3 ? v : 0);
+        defaultGroupMode.setSelectedIndex(
+                v >= 0 && v < defaultGroupMode.getItemCount() ? v : 0);
     }
 
     public boolean isAutoCreateLibs() {
