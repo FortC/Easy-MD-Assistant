@@ -543,10 +543,28 @@ public class AiSettingsComponent {
     // ==================== 导入 cc-switch 配置 ====================
 
     /**
+     * 凭据访问授权弹窗：在任何文件读取之前，明确告知将访问哪些本地凭据文件、读取目的与数据处理方式，
+     * 经用户明确同意后才执行导入（Marketplace 审核要求：transparency & user consent）。
+     */
+    private boolean showCredentialConsent() {
+        return com.intellij.openapi.ui.Messages.showYesNoDialog(project,
+                I18n.t("cc.consent.msg"),
+                I18n.t("set.importCc"),
+                I18n.t("cc.consent.ok"),
+                I18n.t("cc.consent.cancel"),
+                com.intellij.openapi.ui.Messages.getWarningIcon())
+                == com.intellij.openapi.ui.Messages.YES;
+    }
+
+    /**
      * 发现 cc-switch / Claude Code / Codex 中的服务商配置，选择后填入表单（不立即保存，仍需 Apply/OK）。
      * 自动发现为空时允许手动选择 cc-switch 的 config.json。
+     * 任何文件读取都发生在用户明确同意之后。
      */
     private void importCcSwitch() {
+        if (!showCredentialConsent()) {
+            return;
+        }
         setStatus(I18n.t("cc.scanning"), true);
         ApplicationManager.getApplication().executeOnPooledThread(() -> {
             List<CcSwitchImporter.Candidate> found = CcSwitchImporter.discover();

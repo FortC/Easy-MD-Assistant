@@ -4,7 +4,7 @@ plugins {
 }
 
 group 'com.aitools'
-version '1.8.0'
+version '1.8.1'
 
 // 以 2021.1(211) 为最低支持版本编译，插件可运行于 2021.1 ~ until-build(299) 之间的所有 IDEA
 // 2021.1 运行于 JBR 11，因此字节码目标必须是 Java 11

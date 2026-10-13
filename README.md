@@ -31,7 +31,7 @@ Four knowledge roles (requirement / example / result / error) whose directories 
 - One-click AI actions: **summarize / translate / polish / outline / extract TODOs** — copy the result, append it to the source doc, or save it as a new file
 
 ### 🔌 Dual-protocol providers
-The **Import cc-switch config** button in Settings reads providers from cc-switch (`~/.cc-switch/config.json`) and the live Claude Code (`~/.claude/settings.json`) / Codex (`~/.codex`) configurations.
+The **Import cc-switch config** button in Settings reads providers from cc-switch (`~/.cc-switch/config.json`) and the live Claude Code (`~/.claude/settings.json`) / Codex (`~/.codex`) configurations. It is strictly opt-in: a consent dialog lists exactly which credential files will be read and why **before** any access; read-only, nothing is modified or uploaded.
 
 | Provider | Protocol | Base URL example | Model example |
 |---|---|---|---|

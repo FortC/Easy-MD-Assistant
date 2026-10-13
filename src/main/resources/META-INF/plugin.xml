@@ -17,10 +17,15 @@
             <li>Bilingual UI (English / Simplified Chinese)</li>
         </ul>
         <b>Providers:</b> OpenAI-compatible endpoints (OpenAI, DeepSeek, GLM, OneAPI...) and Anthropic (Claude).<br>
+        Importing provider configs from cc-switch / Claude Code / Codex is strictly <b>opt-in</b>: a consent dialog lists exactly which local credential files will be read, and why, before any file access happens; nothing is modified or uploaded.<br>
         Configure API key and model in <b>Settings &gt; Tools &gt; EasyMDAssistant AI</b> first.
     ]]></description>
 
     <change-notes><![CDATA[
+        <b>1.8.1</b><br>
+        <ul>
+            <li>Explicit credential-access consent: the "Import cc-switch config" action now shows a permission dialog <i>before</i> reading anything, listing exactly which local files may be accessed (~/.cc-switch/config.json, ~/.claude/settings.json, ~/.codex/config.toml + auth.json), what fields are parsed (URL / model / API key) and how data is handled (read-only, never modified, never uploaded)</li>
+        </ul>
         <b>1.8.0</b><br>
         <ul>
             <li>New "Original tree" grouping: mirror the project's real directory hierarchy (nested, full paths) with no plugin classification; "Flat list" moved to the end of the grouping dropdown</li>

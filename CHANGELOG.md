@@ -3,6 +3,11 @@
 本项目所有显著变更均记录于此，格式遵循 [Keep a Changelog](https://keepachangelog.com/zh-CN/1.1.0/)，
 版本号遵循 [语义化版本](https://semver.org/lang/zh-CN/)。
 
+## [1.8.1] - 2026-10-13
+
+### Added
+- 「导入 cc-switch 配置」增加显式凭据访问授权弹窗（Marketplace 审核要求）：点击导入后、任何文件读取之前，明确列示将访问的本地凭据文件（`~/.cc-switch/config.json`、`~/.claude/settings.json`、`~/.codex/config.toml` + `auth.json`）、解析的字段（地址 / 模型 / API Key）与数据处理承诺（只读、不修改、不上传），用户同意后才开始扫描；拒绝则完全不做任何文件访问
+
 ## [1.8.0] - 2026-10-08
 
 ### Added

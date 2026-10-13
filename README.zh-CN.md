@@ -52,7 +52,7 @@
 
 ### 5. AI 服务商（双协议通用格式）
 
-设置页「**导入 cc-switch 配置**」可自动读取 cc-switch（`~/.cc-switch/config.json`）以及 Claude Code / Codex 当前生效的服务商配置，选择后一键填入。
+设置页「**导入 cc-switch 配置**」可自动读取 cc-switch（`~/.cc-switch/config.json`）以及 Claude Code / Codex 当前生效的服务商配置，选择后一键填入。读取凭据文件前会**先弹出授权确认**，明确列出访问的文件与用途（只读、不修改、不上传），拒绝则不做任何读取。
 
 | 服务商 | 协议 | 地址示例 | 模型示例 |
 |---|---|---|---|

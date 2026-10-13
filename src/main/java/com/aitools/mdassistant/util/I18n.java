@@ -134,7 +134,18 @@ public final class I18n {
         ZH.put("set.test", "测试连接");
         ZH.put("set.copyCurl", "复制 cURL");
         ZH.put("set.importCc", "导入 cc-switch 配置");
-        ZH.put("set.importCc.tip", "读取 cc-switch（~/.cc-switch/config.json）及 Claude Code / Codex 当前生效的服务商配置，填入上方表单");
+        ZH.put("set.importCc.tip", "读取 cc-switch（~/.cc-switch/config.json）及 Claude Code / Codex 当前生效的服务商配置，填入上方表单；读取前会先征求你的明确同意");
+        ZH.put("cc.consent.ok", "同意并扫描");
+        ZH.put("cc.consent.cancel", "取消");
+        ZH.put("cc.consent.msg", "<html><body style='width:470px'>"
+                + "导入功能需要读取以下<b>本地凭据文件</b>，用于发现 API 地址、模型与 API Key 并填入本插件的设置表单：<ol>"
+                + "<li><code>~/.cc-switch/config.json</code> —— cc-switch 的服务商列表</li>"
+                + "<li><code>~/.claude/settings.json</code> —— Claude Code 当前生效配置（可能包含 API Key）</li>"
+                + "<li><code>~/.codex/config.toml</code> 与 <code>~/.codex/auth.json</code> —— Codex 服务商与密钥</li>"
+                + "</ol>"
+                + "整个过程<b>只读取、不修改、绝不上传</b>这些文件；仅解析其中的地址 / 模型 / 密钥字段，"
+                + "发现的 API Key 只保存在本插件配置中（优先存入 IDE 凭据库）。"
+                + "<br><br>是否允许 EasyMDAssistant 读取上述文件？</body></html>");
         ZH.put("set.curlCopied", "已复制等价 cURL 命令：请在终端（Git Bash/PowerShell）粘贴运行——若 curl 通而插件不通请反馈，若 curl 也不通则是网络/配置问题");
         ZH.put("set.testing", "测试中…");
         ZH.put("set.testingUrl", "测试中… {0}");
@@ -343,7 +354,18 @@ public final class I18n {
         EN.put("set.test", "Test connection");
         EN.put("set.copyCurl", "Copy cURL");
         EN.put("set.importCc", "Import cc-switch config");
-        EN.put("set.importCc.tip", "Read providers from cc-switch (~/.cc-switch/config.json) and the live Claude Code / Codex configs into the form above");
+        EN.put("set.importCc.tip", "Read providers from cc-switch (~/.cc-switch/config.json) and the live Claude Code / Codex configs into the form above; asks for your explicit consent before reading anything");
+        EN.put("cc.consent.ok", "Consent & scan");
+        EN.put("cc.consent.cancel", "Cancel");
+        EN.put("cc.consent.msg", "<html><body style='width:470px'>"
+                + "The import needs to read these <b>local credential files</b> to discover base URLs, models and API keys and fill them into this plugin's settings form:<ol>"
+                + "<li><code>~/.cc-switch/config.json</code> — cc-switch provider list</li>"
+                + "<li><code>~/.claude/settings.json</code> — live Claude Code configuration (may contain an API key)</li>"
+                + "<li><code>~/.codex/config.toml</code> and <code>~/.codex/auth.json</code> — Codex provider and key</li>"
+                + "</ol>"
+                + "The process is <b>read-only</b>: these files are never modified or uploaded. Only URL / model / key fields are parsed; "
+                + "discovered API keys are stored in this plugin's configuration (the IDE credential store is preferred)."
+                + "<br><br>Allow EasyMDAssistant to read the files above?</body></html>");
         EN.put("set.curlCopied", "Equivalent cURL copied: run it in a terminal — if curl works but the plugin does not, report it; if curl fails too, it is a network/config issue");
         EN.put("set.testing", "Testing…");
         EN.put("set.testingUrl", "Testing… {0}");
